@@ -3,3 +3,4 @@ flask-cors
 google-generativeai
 python-dotenv
 Pillow
+gunicorn
