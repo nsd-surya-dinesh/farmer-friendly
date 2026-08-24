@@ -61,7 +61,7 @@ function showView(name) {
 }
 
 // ===================== Backend config =====================
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "https://farmer-friendly-2zx0.onrender.com";
 
 // ===================== Diagnose crop =====================
 function previewImage() {
