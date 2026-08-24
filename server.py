@@ -87,6 +87,12 @@ def init_db():
     conn.close()
 
 
+# Run this at import time (not just when executed directly), since
+# gunicorn imports this module rather than running it as __main__ —
+# without this, the database tables never get created in production.
+init_db()
+
+
 # ===================== Crop disease diagnosis =====================
 
 @app.route("/api/diagnose", methods=["POST"])
@@ -241,5 +247,4 @@ def health():
 
 
 if __name__ == "__main__":
-    init_db()
     app.run(debug=True, port=5000)
