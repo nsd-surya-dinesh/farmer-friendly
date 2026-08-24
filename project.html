@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Friendly — Regenerative Agriculture Network</title>
+    <link rel="stylesheet" href="project.css">
+</head>
+
+<body>
+    <header>
+        <a href="#" class="logo-container">
+            <img src="image-project.jpeg" class="logo-img">
+            <span class="logo-text">Farmer Friendly</span>
+        </a>
+
+        <nav class="nav-container">
+            <a href="#" onclick="showView('diagnose')" class="view-link active" id="navDiagnose">Diagnose Crop</a>
+            <a href="#" onclick="showView('recommend')" class="view-link" id="navRecommend">Get Recommendation</a>
+            <a href="#" onclick="showView('dashboard')" class="view-link" id="navDashboard">State Dashboard</a>
+            <button id="navLoginBtn" onclick="openModal('login')">Log In</button>
+            <button id="navSignupBtn" class="btn-primary" onclick="openModal('signup')">Sign Up</button>
+        </nav>
+    </header>
+
+    <main style="padding: 40px; max-width: 900px; margin: 0 auto;">
+
+        <!-- ===================== DIAGNOSE VIEW ===================== -->
+        <section id="view-diagnose" class="view active">
+            <h1>Diagnose a Crop</h1>
+            <p>Upload a photo of your crop or leaf. Our AI will identify visible diseases or pests and suggest regenerative care steps.</p>
+
+            <div class="form-card">
+                <label for="diagnoseState">Your state</label>
+                <select id="diagnoseState"></select>
+
+                <label for="imageUpload">Crop photo</label>
+                <input type="file" id="imageUpload" accept="image/*" onchange="previewImage()">
+                <img id="imagePreview" style="display:none; max-width: 100%; border-radius: 6px; margin-top: 10px;">
+
+                <button id="diagnoseBtn" onclick="submitDiagnosis()" class="btn-primary" type="button">Diagnose Crop</button>
+            </div>
+
+            <div id="diagnoseResult"></div>
+        </section>
+
+        <!-- ===================== RECOMMEND VIEW ===================== -->
+        <section id="view-recommend" class="view">
+            <h1>Get a Regenerative Crop Recommendation</h1>
+            <p>Tell us your state, soil type, and season — get AI-backed crop and regenerative practice recommendations.</p>
+
+            <div class="form-card">
+                <label for="recommendState">Your state</label>
+                <select id="recommendState"></select>
+
+                <label for="soilType">Soil type</label>
+                <select id="soilType">
+                    <option>Alluvial</option>
+                    <option>Black (Cotton)</option>
+                    <option>Red & Laterite</option>
+                    <option>Arid/Sandy</option>
+                    <option>Loamy</option>
+                    <option>Not sure</option>
+                </select>
+
+                <label for="seasonSelect">Season</label>
+                <select id="seasonSelect">
+                    <option>Kharif (Monsoon)</option>
+                    <option>Rabi (Winter)</option>
+                    <option>Zaid (Summer)</option>
+                </select>
+
+                <button id="recommendBtn" onclick="submitRecommendation()" class="btn-primary" type="button">Get Recommendation</button>
+            </div>
+
+            <div id="recommendResult"></div>
+        </section>
+
+        <!-- ===================== STATE DASHBOARD VIEW ===================== -->
+        <section id="view-dashboard" class="view">
+            <h1>State Cooperation Dashboard</h1>
+            <p>Shared agricultural data across states — a digital public good for cross-state collaboration on climate-resilient farming.</p>
+
+            <div class="metrics-row" id="dashboardMetrics"></div>
+
+            <h2>Most Common Crop Issues</h2>
+            <div id="commonIssues"></div>
+
+            <h2>Diagnoses by State</h2>
+            <div id="diagnosesByState"></div>
+
+            <h2>Recommendations by State</h2>
+            <div id="recsByState"></div>
+        </section>
+
+    </main>
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Log In</h2>
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <input type="email" id="email" placeholder="Email Address" required />
+                <input type="password" id="password" placeholder="Password" required />
+                <button type="submit" id="submitAuthBtn">Log In</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="project.js"></script>
+</body>
+</html>

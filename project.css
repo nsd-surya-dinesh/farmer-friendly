@@ -1,0 +1,296 @@
+/* Reset default page margins & fonts */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: rgb(232, 255, 255);
+}
+
+/* Header bar fixed across the top */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background-color: rgb(253, 226, 231);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.logo-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.logo-text {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.nav-container a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  padding: 6px 4px;
+}
+
+.view-link.active {
+  color: #007bff;
+  border-bottom: 2px solid #007bff;
+}
+
+.nav-container button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid #007bff;
+  background-color: transparent;
+  color: #007bff;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+/* ===================== Views ===================== */
+.view { display: none; }
+.view.active { display: block; }
+
+h1 {
+  color: #333;
+  margin-bottom: 8px;
+}
+
+h2 {
+  color: #333;
+  margin-top: 32px;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+}
+
+/* ===================== Citizen request form ===================== */
+.form-card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 24px;
+  margin-top: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-card label {
+  font-weight: 600;
+  color: #555;
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
+.form-card select,
+.form-card textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.voice-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0;
+}
+
+.voice-row button {
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid #007bff;
+  background-color: transparent;
+  color: #007bff;
+  font-weight: 600;
+}
+
+#voiceStatus {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+#submitBtn {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+#submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===================== Result / tags ===================== */
+.result-card {
+  margin-top: 20px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.result-card.loading { color: #777; font-style: italic; }
+.result-card.error { background-color: #ffe0e0; color: #a00; }
+.result-card.success { border-left: 4px solid #28a745; }
+
+.tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-right: 8px;
+  margin-top: 8px;
+}
+
+.tag.category {
+  background-color: rgb(253, 226, 231);
+  color: #a94465;
+}
+
+.tag.priority-high { background-color: #ffe0e0; color: #a00; }
+.tag.priority-medium { background-color: #fff3cd; color: #856404; }
+.tag.priority-low { background-color: #d4edda; color: #155724; }
+
+/* ===================== Dashboard ===================== */
+.metrics-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.metric-card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 18px 24px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metric-label {
+  font-size: 0.8rem;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.metric-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.request-row {
+  background-color: white;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+}
+
+.request-row p {
+  margin: 8px 0 0;
+  color: #333;
+}
+
+.region-label {
+  font-size: 0.85rem;
+  color: #777;
+  margin-left: 4px;
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  background-color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* ===================== Modal ===================== */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 15% auto;
+  padding: 24px;
+  width: 300px;
+  border-radius: 8px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-content input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.modal-content button[type="submit"] {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.close-btn {
+  position: absolute;
+  right: 12px;
+  top: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  color: #666;
+}
