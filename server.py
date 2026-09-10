@@ -21,7 +21,7 @@ from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from PIL import Image
-import google.generativeai as genai
+import google.genai as genai
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -34,15 +34,11 @@ CORS(app)
 
 if API_KEY:
     genai.configure(api_key=API_KEY)
-    model = genai.GenerativeModel("gemini-3.6-flash")
+    model = genai.GenerativeModel("gemini-2.5-flash")
 else:
     model = None
 
-# Representative soil/climate context per state. In production this would
-# be sourced from real satellite data (e.g. Google Earth Engine), soil
-# health card data, and IMD weather forecasts. Documented honestly in
-# README as a next step — this table is a realistic stand-in so the AI
-# reasoning is regionally grounded even without live data feeds.
+
 STATE_CONTEXT = {
     "Andhra Pradesh": "coastal & inland mix, red/black soils, tropical climate, monsoon-dependent",
     "Uttar Pradesh": "alluvial soils, subtropical climate, high groundwater dependence",
@@ -87,13 +83,10 @@ def init_db():
     conn.close()
 
 
-# Run this at import time (not just when executed directly), since
-# gunicorn imports this module rather than running it as __main__ —
-# without this, the database tables never get created in production.
+
 init_db()
 
 
-# ===================== Crop disease diagnosis =====================
 
 @app.route("/api/diagnose", methods=["POST"])
 def diagnose():
@@ -125,13 +118,15 @@ Respond ONLY with a valid JSON object, no other text, in this exact format:
 }}"""
 
     try:
-        response = model.generate_content([prompt, image])
+        response = model.generate_content(
+            [prompt, image],
+            generation_config=genai.types.GenerationConfig(
+                response_mime_type="application/json",
+                temperature=0.2,
+            ),
+        )
         text = response.text.strip()
-        if text.startswith("```"):
-            text = text.split("```")[1]
-            if text.startswith("json"):
-                text = text[4:]
-        result = json.loads(text.strip())
+        result = json.loads(text)
     except Exception as e:
         return jsonify({"error": f"Gemini request failed: {e}"}), 500
 
@@ -176,13 +171,15 @@ Respond ONLY with a valid JSON object, no other text, in this exact format:
 }}"""
 
     try:
-        response = model.generate_content(prompt)
+        response = model.generate_content(
+            prompt,
+            generation_config=genai.types.GenerationConfig(
+                response_mime_type="application/json",
+                temperature=0.2,
+            ),
+        )
         text = response.text.strip()
-        if text.startswith("```"):
-            text = text.split("```")[1]
-            if text.startswith("json"):
-                text = text[4:]
-        result = json.loads(text.strip())
+        result = json.loads(text)
     except Exception as e:
         return jsonify({"error": f"Gemini request failed: {e}"}), 500
 
@@ -201,7 +198,6 @@ Respond ONLY with a valid JSON object, no other text, in this exact format:
     return jsonify(result)
 
 
-# ===================== State cooperation dashboard =====================
 
 @app.route("/api/dashboard", methods=["GET"])
 def dashboard():
