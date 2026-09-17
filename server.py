@@ -26,7 +26,7 @@ CORS(app)
 if API_KEY:
     genai.configure(api_key=API_KEY)
     # Changed from invalid "gemini-3.6-flash" to "gemini-1.5-flash"
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    model = genai.GenerativeModel("gemini-3.6-flash")
 else:
     model = None
 
