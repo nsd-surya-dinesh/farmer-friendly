@@ -1,16 +1,7 @@
+
 """
 server.py — Farmer Friendly backend
 AgriN & Regenerative Agricultural Intelligence track.
-
-Two AI-powered flows:
-  1. Crop disease diagnosis from an uploaded photo (Gemini Vision)
-  2. Regenerative crop recommendations based on state, soil type, and
-     season (Gemini text, grounded in a representative regional
-     soil/climate context table)
-
-Both flows are stored and aggregated into a state cooperation dashboard,
-so different states can see shared agricultural patterns — the
-"digital public good" / cross-state collaboration piece of the brief.
 """
 
 import os
@@ -34,10 +25,10 @@ CORS(app)
 
 if API_KEY:
     genai.configure(api_key=API_KEY)
-    model = genai.GenerativeModel("gemini-3.6-flash")
+    # Changed from invalid "gemini-3.6-flash" to "gemini-1.5-flash"
+    model = genai.GenerativeModel("gemini-1.5-flash")
 else:
     model = None
-
 
 STATE_CONTEXT = {
     "Andhra Pradesh": "coastal & inland mix, red/black soils, tropical climate, monsoon-dependent",
@@ -83,10 +74,10 @@ def init_db():
     conn.close()
 
 
-
 init_db()
 
 
+# ===================== Crop Diagnosis =====================
 
 @app.route("/api/diagnose", methods=["POST"])
 def diagnose():
@@ -149,7 +140,7 @@ Respond ONLY with a valid JSON object, no other text, in this exact format:
 
 @app.route("/api/recommend", methods=["POST"])
 def recommend():
-    data = request.get_json(force=True)
+    data = request.get_json(silent=True) or {}
     state = data.get("state", "Unknown")
     soil_type = data.get("soil_type", "Unspecified")
     season = data.get("season", "Unspecified")
@@ -198,6 +189,7 @@ Respond ONLY with a valid JSON object, no other text, in this exact format:
     return jsonify(result)
 
 
+# ===================== Dashboard & Health =====================
 
 @app.route("/api/dashboard", methods=["GET"])
 def dashboard():
