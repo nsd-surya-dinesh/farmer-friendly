@@ -4,8 +4,19 @@ body {
   padding: 0;
   font-family: Arial, sans-serif;
   background-color: #b5e9c8 ;
+  justify-content: center; /* Horizontally center */
+  align-items: center;
   
 }
+
+.scanner-card {
+      width: 100%;
+      max-width: 400px;
+      padding: 16px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
 
 /* Header bar fixed across the top */
 header {
