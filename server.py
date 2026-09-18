@@ -1,7 +1,16 @@
-
 """
 server.py — Farmer Friendly backend
 AgriN & Regenerative Agricultural Intelligence track.
+
+Two AI-powered flows:
+  1. Crop disease diagnosis from an uploaded photo (Gemini Vision)
+  2. Regenerative crop recommendations based on state, soil type, and
+     season (Gemini text, grounded in a representative regional
+     soil/climate context table)
+
+Both flows are stored and aggregated into a state cooperation dashboard,
+so different states can see shared agricultural patterns — the
+"digital public good" / cross-state collaboration piece of the brief.
 """
 
 import os
@@ -23,13 +32,47 @@ DB_FILE = "farmer_friendly.db"
 app = Flask(__name__)
 CORS(app)
 
+def get_working_model():
+    """
+    Tries a list of candidate Gemini models in order and returns the first
+    one that actually responds. This exists because Gemini model names get
+    deprecated/replaced frequently — hardcoding a single name means the
+    server breaks every time Google retires that model. This tries newest
+    first, falling back through older names automatically.
+    """
+    candidates = [
+        "gemini-3.6-flash",
+        "gemini-3.1-flash-lite",
+        "gemini-flash-latest",
+        "gemini-2.5-flash",
+        "gemini-2.5-flash-lite",
+        "gemini-1.5-flash",
+    ]
+    for name in candidates:
+        try:
+            m = genai.GenerativeModel(name)
+            # Cheap smoke test — a real call, not just object construction,
+            # since construction alone doesn't reveal a deprecated/missing model.
+            m.generate_content("ping", generation_config={"max_output_tokens": 5})
+            print(f"[Farmer Friendly] Using Gemini model: {name}")
+            return m
+        except Exception as e:
+            print(f"[Farmer Friendly] Model '{name}' unavailable ({e}); trying next...")
+    print("[Farmer Friendly] WARNING: no candidate Gemini model worked.")
+    return None
+
+
 if API_KEY:
     genai.configure(api_key=API_KEY)
-    # Changed from invalid "gemini-3.6-flash" to "gemini-1.5-flash"
-    model = genai.GenerativeModel("gemini-3.8-flash")
+    model = get_working_model()
 else:
     model = None
 
+# Representative soil/climate context per state. In production this would
+# be sourced from real satellite data (e.g. Google Earth Engine), soil
+# health card data, and IMD weather forecasts. Documented honestly in
+# README as a next step — this table is a realistic stand-in so the AI
+# reasoning is regionally grounded even without live data feeds.
 STATE_CONTEXT = {
     "Andhra Pradesh": "coastal & inland mix, red/black soils, tropical climate, monsoon-dependent",
     "Uttar Pradesh": "alluvial soils, subtropical climate, high groundwater dependence",
@@ -74,10 +117,13 @@ def init_db():
     conn.close()
 
 
+# Run this at import time (not just when executed directly), since
+# gunicorn imports this module rather than running it as __main__ —
+# without this, the database tables never get created in production.
 init_db()
 
 
-# ===================== Crop Diagnosis =====================
+# ===================== Crop disease diagnosis =====================
 
 @app.route("/api/diagnose", methods=["POST"])
 def diagnose():
@@ -109,15 +155,13 @@ Respond ONLY with a valid JSON object, no other text, in this exact format:
 }}"""
 
     try:
-        response = model.generate_content(
-            [prompt, image],
-            generation_config=genai.types.GenerationConfig(
-                response_mime_type="application/json",
-                temperature=0.2,
-            ),
-        )
+        response = model.generate_content([prompt, image])
         text = response.text.strip()
-        result = json.loads(text)
+        if text.startswith("```"):
+            text = text.split("```")[1]
+            if text.startswith("json"):
+                text = text[4:]
+        result = json.loads(text.strip())
     except Exception as e:
         return jsonify({"error": f"Gemini request failed: {e}"}), 500
 
@@ -140,7 +184,7 @@ Respond ONLY with a valid JSON object, no other text, in this exact format:
 
 @app.route("/api/recommend", methods=["POST"])
 def recommend():
-    data = request.get_json(silent=True) or {}
+    data = request.get_json(force=True)
     state = data.get("state", "Unknown")
     soil_type = data.get("soil_type", "Unspecified")
     season = data.get("season", "Unspecified")
@@ -162,15 +206,13 @@ Respond ONLY with a valid JSON object, no other text, in this exact format:
 }}"""
 
     try:
-        response = model.generate_content(
-            prompt,
-            generation_config=genai.types.GenerationConfig(
-                response_mime_type="application/json",
-                temperature=0.2,
-            ),
-        )
+        response = model.generate_content(prompt)
         text = response.text.strip()
-        result = json.loads(text)
+        if text.startswith("```"):
+            text = text.split("```")[1]
+            if text.startswith("json"):
+                text = text[4:]
+        result = json.loads(text.strip())
     except Exception as e:
         return jsonify({"error": f"Gemini request failed: {e}"}), 500
 
@@ -189,7 +231,7 @@ Respond ONLY with a valid JSON object, no other text, in this exact format:
     return jsonify(result)
 
 
-# ===================== Dashboard & Health =====================
+# ===================== State cooperation dashboard =====================
 
 @app.route("/api/dashboard", methods=["GET"])
 def dashboard():
